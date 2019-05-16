@@ -138,22 +138,9 @@ function Get-DiskByIdentifier
         $DiskIdType = 'Number'
     )
 
-    if ($DiskIdType -eq 'Guid')
-    {
-        # The Disk Id requested uses a Guid so have to get all disks and filter
-        $disk = Get-Disk -ErrorAction SilentlyContinue |
-            Where-Object -Property Guid -EQ $DiskId
-    }
-    else
-    {
-        $diskIdParameter = @{
-            $DiskIdType = $DiskId
-        }
-
-        $disk = Get-Disk `
-            @diskIdParameter `
-            -ErrorAction SilentlyContinue
-    }
+    $disk = Get-PhysicalDisk | Get-Disk | `
+                Where-Object -Property $DiskIdType -EQ -Value $DiskId `
+                -ErrorAction SilentlyContinue
 
     return $disk
 } # end function Get-DiskByIdentifier
