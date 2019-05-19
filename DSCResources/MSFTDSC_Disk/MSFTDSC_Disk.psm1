@@ -126,7 +126,7 @@ function Get-TargetResource
         -DiskIdType $DiskIdType
 
     $partition = Get-PhysicalDisk | Get-Disk | Get-Partition | `
-                    Where-Object -Property DriveLetter -EQ -Value $DriveLetter`
+                    Where-Object -Property DriveLetter -EQ -Value $DriveLetter `
                     -ErrorAction SilentlyContinue
 
     $volume = Get-PhysicalDisk | Get-Disk | Get-Partition | Get-Volume | `
@@ -798,7 +798,7 @@ function Test-TargetResource
     } # if
 
     $partition = Get-PhysicalDisk | Get-Disk | Get-Partition | `
-                    Where-Object -Property DriveLetter -EQ -Value $DriveLetter`
+                    Where-Object -Property DriveLetter -EQ -Value $DriveLetter `
                     -ErrorAction SilentlyContinue
 
     if ($partition.DriveLetter -ne $DriveLetter)
