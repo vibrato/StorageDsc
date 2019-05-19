@@ -797,7 +797,7 @@ function Test-TargetResource
         }
     } # if
 
-    $partition = Get-PhysicalDisk | Get-Disk | Get-Partition `
+    $partition = Get-PhysicalDisk | Get-Disk | Get-Partition | `
                     Where-Object -Property DriveLetter -EQ -Value $DriveLetter`
                     -ErrorAction SilentlyContinue
 
