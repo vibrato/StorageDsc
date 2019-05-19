@@ -47,6 +47,19 @@ try
             $UniqueId
         )
     }
+
+    function Get-PhysicalDisk
+    {
+        [CmdletBinding()]
+        Param
+        (
+            [System.UInt32]
+            $Number,
+
+            [System.String]
+            $UniqueId
+        )
+    }
     #endregion
 
     #region Function Assert-DriveLetterValid
@@ -161,6 +174,8 @@ try
         $testDiskNumber = 10
         $testDiskUniqueId = 'DiskUniqueId'
         $testDiskGuid = [Guid]::NewGuid().ToString()
+        $testPhysicalDiskUsage = 1
+
 
         $mockedDisk = [pscustomobject] @{
             Number   = $testDiskNumber
@@ -168,11 +183,25 @@ try
             Guid     = $testDiskGuid
         }
 
+        $mockedPhysicalDisk = [pscustomobject] @{
+            Number            = $testDiskNumber
+            UniqueId          = $testDiskUniqueId
+            Guid              = $testDiskGuid
+            PhysicalDiskUsage = $testPhysicalDiskUsage
+        }
+
         Describe 'StorageDsc.Common\Get-DiskByIdentifier' {
             Context 'Disk exists that matches the specified Disk Number' {
                 Mock `
                     -CommandName Get-Disk `
                     -MockWith { $mockedDisk } `
+                    -ModuleName StorageDsc.Common `
+                    -ParameterFilter { $Number -eq $testDiskNumber } `
+                    -Verifiable
+
+                Mock `
+                    -CommandName Get-PhysicalDisk `
+                    -MockWith { $mockedPhysicalDisk } `
                     -ModuleName StorageDsc.Common `
                     -ParameterFilter { $Number -eq $testDiskNumber } `
                     -Verifiable
@@ -185,6 +214,12 @@ try
                     Assert-VerifiableMock
                     Assert-MockCalled `
                         -CommandName Get-Disk `
+                        -ModuleName StorageDsc.Common `
+                        -ParameterFilter { $Number -eq $testDiskNumber } `
+                        -Exactly `
+                        -Times 1
+                    Assert-MockCalled `
+                        -CommandName Get-PhysicalDisk `
                         -ModuleName StorageDsc.Common `
                         -ParameterFilter { $Number -eq $testDiskNumber } `
                         -Exactly `
@@ -207,6 +242,12 @@ try
                     Assert-VerifiableMock
                     Assert-MockCalled `
                         -CommandName Get-Disk `
+                        -ModuleName StorageDsc.Common `
+                        -ParameterFilter { $Number -eq $testDiskNumber } `
+                        -Exactly `
+                        -Times 1
+                    Assert-MockCalled `
+                        -CommandName Get-PhysicalDisk `
                         -ModuleName StorageDsc.Common `
                         -ParameterFilter { $Number -eq $testDiskNumber } `
                         -Exactly `
@@ -234,6 +275,12 @@ try
                         -ParameterFilter { $UniqueId -eq $testDiskUniqueId } `
                         -Exactly `
                         -Times 1
+                    Assert-MockCalled `
+                        -CommandName Get-PhysicalDisk `
+                        -ModuleName StorageDsc.Common `
+                        -ParameterFilter { $UniqueId -eq $testDiskUniqueId } `
+                        -Exactly `
+                        -Times 1
                 }
             }
 
@@ -256,6 +303,12 @@ try
                         -ParameterFilter { $UniqueId -eq $testDiskUniqueId } `
                         -Exactly `
                         -Times 1
+                    Assert-MockCalled `
+                        -CommandName Get-PhysicalDisk `
+                        -ModuleName StorageDsc.Common `
+                        -ParameterFilter { $UniqueId -eq $testDiskUniqueId } `
+                        -Exactly `
+                        -Times 1
                 }
             }
 
@@ -263,6 +316,12 @@ try
                 Mock `
                     -CommandName Get-Disk `
                     -MockWith { $mockedDisk } `
+                    -ModuleName StorageDsc.Common `
+                    -Verifiable
+
+                Mock `
+                    -CommandName Get-PhysicalDisk `
+                    -MockWith { $mockedPhysicalDisk } `
                     -ModuleName StorageDsc.Common `
                     -Verifiable
 
@@ -277,6 +336,11 @@ try
                         -ModuleName StorageDsc.Common `
                         -Exactly `
                         -Times 1
+                    Assert-MockCalled `
+                        -CommandName Get-PhysicalDisk `
+                        -ModuleName StorageDsc.Common `
+                        -Exactly `
+                        -Times 1
                 }
             }
 
@@ -285,7 +349,10 @@ try
                     -CommandName Get-Disk `
                     -ModuleName StorageDsc.Common `
                     -Verifiable
-
+                Mock `
+                    -CommandName Get-PhysicalDisk `
+                    -ModuleName StorageDsc.Common `
+                    -Verifiable
                 It "Should return Disk with Disk Guid $testDiskGuid" {
                     Get-DiskByIdentifier -DiskId $testDiskGuid -DiskIdType 'Guid' | Should -BeNullOrEmpty
                 }
@@ -294,6 +361,11 @@ try
                     Assert-VerifiableMock
                     Assert-MockCalled `
                         -CommandName Get-Disk `
+                        -ModuleName StorageDsc.Common `
+                        -Exactly `
+                        -Times 1
+                    Assert-MockCalled `
+                        -CommandName Get-PhysicalDisk `
                         -ModuleName StorageDsc.Common `
                         -Exactly `
                         -Times 1
@@ -327,7 +399,7 @@ try
             Context 'Contains multiple access paths where none are local' {
                 It 'Should return $false' {
                     Test-AccessPathAssignedToLocal `
-                        -AccessPath @('\\?\Volume{905551f3-33a5-421d-ac24-c993fbfb3184}\','\\?\Volume{99cf0194-ac45-4a23-b36e-3e458158a63e}\') | Should -Be $false
+                        -AccessPath @('\\?\Volume{905551f3-33a5-421d-ac24-c993fbfb3184}\', '\\?\Volume{99cf0194-ac45-4a23-b36e-3e458158a63e}\') | Should -Be $false
                 }
             }
         }

@@ -125,11 +125,11 @@ function Get-TargetResource
         -DiskId $DiskId `
         -DiskIdType $DiskIdType
 
-    $partition = Get-PhysicalDisk | Get-Disk | Get-Partition | `
+    $partition = $disk | Get-Partition | `
                     Where-Object -Property DriveLetter -EQ -Value $DriveLetter `
                     -ErrorAction SilentlyContinue
 
-    $volume = Get-PhysicalDisk | Get-Disk | Get-Partition | Get-Volume | `
+    $volume = $partition | Get-Volume | `
                     Where-Object -Property DriveLetter -EQ -Value $DriveLetter `
                     -ErrorAction SilentlyContinue
 
