@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Fix xDisk - test resource fails when computer is part of a cluster [Issue #80](https://github.com/PowerShell/StorageDsc/issues/80)
+    Get-Disk will now be limited to the disks returned by Get-PhysicalDisk
+
 ## 4.7.0.0
 
 - DiskAccessPath:
