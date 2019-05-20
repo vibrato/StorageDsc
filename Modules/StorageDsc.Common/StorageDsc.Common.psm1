@@ -141,11 +141,11 @@ function Get-DiskByIdentifier
     $physicalDisks = Get-PhysicalDisk
 
     $disk = Get-Disk | `
-                Where-Object -Property UniqueId -EQ $physicalDisks.UniqueId | `
+                Where-Object -Property 'UniqueId' -In $physicalDisks.UniqueId | `
                 Where-Object -Property $DiskIdType -EQ -Value $DiskId `
                 -ErrorAction SilentlyContinue
 
-    return $disk | Select-Object -First 1
+    return $disk
 } # end function Get-DiskByIdentifier
 
 <#
