@@ -138,11 +138,14 @@ function Get-DiskByIdentifier
         $DiskIdType = 'Number'
     )
 
-    $disk = Get-PhysicalDisk | Get-Disk | `
+    $physicalDisks = Get-PhysicalDisk
+
+    $disk = Get-Disk | `
+                Where-Object -Property UniqueId -EQ $physicalDisks.UniqueId | `
                 Where-Object -Property $DiskIdType -EQ -Value $DiskId `
                 -ErrorAction SilentlyContinue
 
-    return $disk
+    return $disk | Select-Object -First 1
 } # end function Get-DiskByIdentifier
 
 <#
